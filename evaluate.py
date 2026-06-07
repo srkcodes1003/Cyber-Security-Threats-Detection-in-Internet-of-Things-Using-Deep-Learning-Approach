@@ -99,7 +99,8 @@ def evaluate_performance(y_true, y_pred, model_name: str, mode: str, class_names
     print(f"F1-Score:  {f1:.4f}")
     print("-"*50)
     print("Detailed Classification Report:")
-    print(classification_report(y_true, y_pred_classes, target_names=class_names, zero_division=0))
+    labels = list(range(len(class_names))) if class_names is not None else None
+    print(classification_report(y_true, y_pred_classes, labels=labels, target_names=class_names, zero_division=0))
     print("="*50 + "\n")
     
     # Generate Heatmap

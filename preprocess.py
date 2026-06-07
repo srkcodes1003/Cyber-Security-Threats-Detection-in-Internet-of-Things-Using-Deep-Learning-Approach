@@ -125,10 +125,16 @@ def preprocess_pipeline(filepath: str, mode: str = "binary", test_size: float = 
                 # heuristic fallback
                 if "normal" in label_clean:
                     return "normal"
-                elif "mailbomb" in label_clean or "processtable" in label_clean or "dos" in label_clean:
+                elif "ddos" in label_clean:
+                    return "ddos"
+                elif "dos" in label_clean or "mailbomb" in label_clean or "processtable" in label_clean:
                     return "dos"
-                elif "satan" in label_clean or "nmap" in label_clean or "scan" in label_clean:
+                elif "satan" in label_clean or "nmap" in label_clean or "scan" in label_clean or "reconnaissance" in label_clean or "portscan" in label_clean:
                     return "probe"
+                elif "theft" in label_clean or "bot" in label_clean or "r2l" in label_clean:
+                    return "r2l"
+                elif "u2r" in label_clean or "buffer_overflow" in label_clean or "rootkit" in label_clean:
+                    return "u2r"
                 else:
                     # Default to 'dos' for unknown attack types
                     return "dos"

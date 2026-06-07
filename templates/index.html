@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Threat Detection SOC | Deep Learning Security</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Background Grid Scanlines -->
+    <div class="scanline"></div>
+    <div class="grid-overlay"></div>
+
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="main-header">
+            <div class="header-logo">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="logo-text">
+                    <h1>AETHER-SOC</h1>
+                    <p>IoT Cyber-Security Anomaly Detection System</p>
+                </div>
+            </div>
+            <div class="header-status-panel">
+                <div class="status-item">
+                    <span class="status-dot green pulsing"></span>
+                    <span class="status-label">ENGINE: ACTIVE</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">SYS_TIME: </span>
+                    <span class="status-val" id="sys-clock">00:00:00</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">ALERTS: </span>
+                    <span class="status-val red-text" id="alert-counter">0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT GRID -->
+        <div class="main-layout">
+            
+            <!-- LEFT PANEL: CONTROL CENTER -->
+            <aside class="control-panel panel">
+                <div class="panel-header">
+                    <i class="fa-solid fa-sliders"></i>
+                    <h2>SOC CONFIGURATION</h2>
+                </div>
+                <div class="panel-content">
+                    <!-- Model settings -->
+                    <div class="form-group">
+                        <label for="dataset-select"><i class="fa-solid fa-database"></i> Benchmark Dataset</label>
+                        <select id="dataset-select">
+                            <option value="bot_iot" selected>Bot-IoT (IoT Specific)</option>
+                            <option value="cic_ids">CIC-IDS (Modern Threats)</option>
+                            <option value="kddcup99">KDDCup99 (Legacy Benchmark)</option>
+                            <option value="nsl_kdd">NSL-KDD (Refined KDD)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model-select"><i class="fa-solid fa-microchip"></i> Deep Learning Model</label>
+                        <select id="model-select">
+                            <option value="ann" selected>Dense ANN (Artificial Neural Net)</option>
+                            <option value="cnn">1D-CNN (Convolutional Net)</option>
+                            <option value="lstm">LSTM (Recurrent Network)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scope-select"><i class="fa-solid fa-arrows-split-up-and-left"></i> Classification Scope</label>
+                        <select id="scope-select">
+                            <option value="binary" selected>Binary (Normal vs. Attack)</option>
+                            <option value="multiclass">Multiclass (Specific Threat Types)</option>
+                        </select>
+                    </div>
+
+                    <hr class="panel-divider">
+
+                    <!-- Live stream controls -->
+                    <div class="stream-control-section">
+                        <h3><i class="fa-solid fa-satellite-dish"></i> Live Stream Simulation</h3>
+                        <p class="section-desc">Stream network packets randomly from the selected dataset to simulate live traffic inspection.</p>
+                        
+                        <div class="stream-buttons">
+                            <button id="btn-start-stream" class="btn btn-primary">
+                                <i class="fa-solid fa-play"></i> Start Stream
+                            </button>
+                            <button id="btn-stop-stream" class="btn btn-secondary" disabled>
+                                <i class="fa-solid fa-pause"></i> Pause
+                            </button>
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>Stream Interval</span>
+                                <span id="interval-val">500ms</span>
+                            </div>
+                            <input type="range" id="interval-slider" min="200" max="3000" step="100" value="500">
+                        </div>
+                    </div>
+
+                    <hr class="panel-divider">
+
+                    <!-- Global Stats -->
+                    <div class="system-stats-section">
+                        <h3><i class="fa-solid fa-chart-line"></i> Engine Performance</h3>
+                        <div class="stats-mini-grid">
+                            <div class="mini-stat-card">
+                                <span class="stat-lbl">Inference Latency</span>
+                                <span class="stat-val" id="stat-latency">0.00 ms</span>
+                            </div>
+                            <div class="mini-stat-card">
+                                <span class="stat-lbl">Throughput</span>
+                                <span class="stat-val" id="stat-fps">0 p/s</span>
+                            </div>
+                            <div class="mini-stat-card">
+                                <span class="stat-lbl">Detection Rate</span>
+                                <span class="stat-val" id="stat-det-rate">0.0%</span>
+                            </div>
+                            <div class="mini-stat-card">
+                                <span class="stat-lbl">Total Packets</span>
+                                <span class="stat-val" id="stat-total">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- MIDDLE CONTAINER -->
+            <main class="dashboard-content">
+                
+                <!-- TOPOLOGY MONITOR -->
+                <section class="topology-section">
+                    <div class="section-title-bar">
+                        <i class="fa-solid fa-circle-nodes"></i>
+                        <h2>IoT NETWORK CLUSTER MONITOR</h2>
+                    </div>
+                    <div class="topology-grid">
+                        <!-- Smart Home Node -->
+                        <div class="node-card green-glow" id="node-home">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-house-laptop"></i>
+                            </div>
+                            <div class="node-info">
+                                <h3>Smart Home Hub</h3>
+                                <p class="node-desc">Thermostats, Cameras, Locks</p>
+                                <div class="node-status-badge">SECURE</div>
+                            </div>
+                            <div class="node-metrics">
+                                <div>Packets: <span class="lbl-pkt-count" id="count-home">0</span></div>
+                                <div>Risk Score: <span class="lbl-risk" id="risk-home">0.0%</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Industrial Factory Gateway -->
+                        <div class="node-card green-glow" id="node-factory">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-industry"></i>
+                            </div>
+                            <div class="node-info">
+                                <h3>Industrial Factory</h3>
+                                <p class="node-desc">PLCs, Actuators, Scada Gateways</p>
+                                <div class="node-status-badge">SECURE</div>
+                            </div>
+                            <div class="node-metrics">
+                                <div>Packets: <span class="lbl-pkt-count" id="count-factory">0</span></div>
+                                <div>Risk Score: <span class="lbl-risk" id="risk-factory">0.0%</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Medical Node -->
+                        <div class="node-card green-glow" id="node-medical">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-heart-pulse"></i>
+                            </div>
+                            <div class="node-info">
+                                <h3>Medical Sensors</h3>
+                                <p class="node-desc">Pacemakers, Health Monitors</p>
+                                <div class="node-status-badge">SECURE</div>
+                            </div>
+                            <div class="node-metrics">
+                                <div>Packets: <span class="lbl-pkt-count" id="count-medical">0</span></div>
+                                <div>Risk Score: <span class="lbl-risk" id="risk-medical">0.0%</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Smart Grid Infrastructure -->
+                        <div class="node-card green-glow" id="node-grid">
+                            <div class="node-icon-wrapper">
+                                <i class="fa-solid fa-bolt"></i>
+                            </div>
+                            <div class="node-info">
+                                <h3>Smart Grid Infrastructure</h3>
+                                <p class="node-desc">Smart Meters, Distribution Nodes</p>
+                                <div class="node-status-badge">SECURE</div>
+                            </div>
+                            <div class="node-metrics">
+                                <div>Packets: <span class="lbl-pkt-count" id="count-grid">0</span></div>
+                                <div>Risk Score: <span class="lbl-risk" id="risk-grid">0.0%</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- REALTIME CHART TIMELINE -->
+                <section class="chart-section panel">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-wave-square"></i>
+                        <h2>REAL-TIME INSPECTION WAVEFORM</h2>
+                    </div>
+                    <div class="panel-content chart-container">
+                        <canvas id="live-timeline-chart"></canvas>
+                    </div>
+                </section>
+
+                <!-- MANUAL PACKET INSPECTOR -->
+                <section class="diagnostics-section panel">
+                    <div class="panel-header">
+                        <i class="fa-solid fa-stethoscope"></i>
+                        <h2>INTERACTIVE PACKET DIAGNOSTICS</h2>
+                    </div>
+                    <div class="panel-content">
+                        <div class="diagnostics-split">
+                            <!-- Input Form -->
+                            <div class="diagnostics-form-panel">
+                                <div class="preset-selector-row">
+                                    <label><i class="fa-solid fa-list-check"></i> Load Preset:</label>
+                                    <div class="preset-buttons" id="preset-buttons-container">
+                                        <!-- Populated dynamically via JS -->
+                                    </div>
+                                </div>
+                                <form id="packet-diagnostics-form">
+                                    <div class="dynamic-form-fields" id="dynamic-form-fields">
+                                        <!-- Form fields based on selected dataset rendered by JS -->
+                                    </div>
+                                    <button type="submit" class="btn btn-accent btn-block" id="btn-run-diagnostics">
+                                        <i class="fa-solid fa-magnifying-glass-chart"></i> Run Deep Inspection
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Diagnostic Result Visualizer -->
+                            <div class="diagnostics-results-panel" id="diagnostics-results">
+                                <div class="diag-placeholder">
+                                    <i class="fa-solid fa-shield-halved big-shield-icon"></i>
+                                    <h3>Awaiting Diagnostics</h3>
+                                    <p>Select a preset or enter values manually, then run inspection to evaluate threat vector probability.</p>
+                                </div>
+                                <div class="diag-results-content hidden" id="diag-results-content">
+                                    <div class="gauge-wrapper">
+                                        <div class="circular-progress" id="confidence-gauge">
+                                            <div class="value-container" id="confidence-text">0%</div>
+                                        </div>
+                                        <p class="gauge-label">Anomaly Confidence</p>
+                                    </div>
+                                    <div class="diag-report-text">
+                                        <div class="report-row">
+                                            <span>Verdict Class:</span>
+                                            <span class="report-val bold" id="report-verdict">Normal</span>
+                                        </div>
+                                        <div class="report-row">
+                                            <span>Classification Level:</span>
+                                            <span class="report-val bold" id="report-level">Secure</span>
+                                        </div>
+                                        <div class="report-row">
+                                            <span>Inspection Latency:</span>
+                                            <span class="report-val" id="report-latency">0.00 ms</span>
+                                        </div>
+                                        <div class="report-row">
+                                            <span>Database Logging:</span>
+                                            <span class="report-val green-text"><i class="fa-solid fa-circle-check"></i> Committed</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <!-- RIGHT PANEL: ALERTS FEED -->
+            <aside class="alerts-panel panel">
+                <div class="panel-header">
+                    <i class="fa-solid fa-bell"></i>
+                    <h2>REAL-TIME THREAT LOGS</h2>
+                </div>
+                <div class="panel-content scrollable">
+                    <table class="logs-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Origin</th>
+                                <th>Verdict</th>
+                                <th>Conf</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <!-- Populated dynamically via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+
+        <!-- BENCHMARK COMPARE PANEL (FULL WIDTH AT BOTTOM) -->
+        <section class="benchmark-section panel">
+            <div class="panel-header">
+                <div class="tab-header">
+                    <i class="fa-solid fa-award"></i>
+                    <h2>DEEP LEARNING MODEL BENCHMARKS (NumPy Core Engine)</h2>
+                </div>
+                <div class="benchmark-tabs">
+                    <button class="tab-btn active" data-dataset="bot_iot">Bot-IoT</button>
+                    <button class="tab-btn" data-dataset="cic_ids">CIC-IDS</button>
+                    <button class="tab-btn" data-dataset="kddcup99">KDDCUP99</button>
+                    <button class="tab-btn" data-dataset="nsl_kdd">NSL-KDD</button>
+                </div>
+            </div>
+            <div class="panel-content">
+                <div class="table-responsive">
+                    <table class="benchmark-table">
+                        <thead>
+                            <tr>
+                                <th>Model Architecture</th>
+                                <th>Classification Scope</th>
+                                <th>Accuracy</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1-Score</th>
+                                <th>Training Overhead (sec)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="benchmark-table-body">
+                            <!-- Loaded via /api/benchmark -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="main-footer">
+            <p>&copy; 2026 AETHER Security. Google DeepMind pair-programmed NumPy DL threat classification framework.</p>
+        </footer>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
