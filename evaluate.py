@@ -12,34 +12,43 @@ def plot_learning_curves(history, model_name: str, mode: str):
     """
     Plots training and validation loss and accuracy curves and saves the plot as an image.
     """
-    plt.figure(figsize=(12, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 5))
+    
+    acc = history.history.get('accuracy', [])
+    val_acc = history.history.get('val_accuracy', [])
+    loss = history.history.get('loss', [])
+    val_loss = history.history.get('val_loss', [])
+    
+    epochs = list(range(1, len(acc) + 1))
     
     # Plot Accuracy
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history['accuracy'], label='Train Accuracy', color='#1a73e8', linewidth=2)
-    if 'val_accuracy' in history.history:
-        plt.plot(history.history['val_accuracy'], label='Val Accuracy', color='#e8710a', linewidth=2)
-    plt.title(f'{model_name} ({mode.capitalize()}) - Accuracy', fontsize=14, fontweight='bold', pad=10)
-    plt.xlabel('Epochs', fontsize=12)
-    plt.ylabel('Accuracy', fontsize=12)
-    plt.legend(frameon=True, facecolor='white', edgecolor='none')
-    plt.grid(True, linestyle='--', alpha=0.5)
+    ax1.plot(epochs, acc, label='Train Accuracy', color='#1a73e8', linewidth=2, marker='o')
+    if len(val_acc) > 0:
+        ax1.plot(epochs, val_acc, label='Val Accuracy', color='#e8710a', linewidth=2, marker='o')
+    ax1.set_title(f'{model_name} ({mode.capitalize()}) - Accuracy', fontsize=14, fontweight='bold', pad=10)
+    ax1.set_xlabel('Epochs', fontsize=12)
+    ax1.set_ylabel('Accuracy', fontsize=12)
+    ax1.legend(frameon=True, facecolor='white', edgecolor='none')
+    ax1.grid(True, linestyle='--', alpha=0.5)
+    if len(epochs) > 0:
+        ax1.set_xticks(epochs)
     
     # Plot Loss
-    plt.subplot(1, 2, 2)
-    plt.plot(history.history['loss'], label='Train Loss', color='#d93025', linewidth=2)
-    if 'val_loss' in history.history:
-        plt.plot(history.history['val_loss'], label='Val Loss', color='#f29900', linewidth=2)
-    plt.title(f'{model_name} ({mode.capitalize()}) - Loss', fontsize=14, fontweight='bold', pad=10)
-    plt.xlabel('Epochs', fontsize=12)
-    plt.ylabel('Loss', fontsize=12)
-    plt.legend(frameon=True, facecolor='white', edgecolor='none')
-    plt.grid(True, linestyle='--', alpha=0.5)
+    ax2.plot(epochs, loss, label='Train Loss', color='#d93025', linewidth=2, marker='o')
+    if len(val_loss) > 0:
+        ax2.plot(epochs, val_loss, label='Val Loss', color='#f29900', linewidth=2, marker='o')
+    ax2.set_title(f'{model_name} ({mode.capitalize()}) - Loss', fontsize=14, fontweight='bold', pad=10)
+    ax2.set_xlabel('Epochs', fontsize=12)
+    ax2.set_ylabel('Loss', fontsize=12)
+    ax2.legend(frameon=True, facecolor='white', edgecolor='none')
+    ax2.grid(True, linestyle='--', alpha=0.5)
+    if len(epochs) > 0:
+        ax2.set_xticks(epochs)
     
     plt.tight_layout()
     filepath = os.path.join(OUTPUT_DIR, f"{model_name.lower().replace(' ', '_')}_{mode}_curves.png")
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
-    plt.close()
+    plt.close(fig)
     print(f"[EVALUATOR] Saved learning curves to: {filepath}")
 
 def plot_confusion_matrix_heatmap(y_true, y_pred_classes, model_name: str, mode: str, class_names=None):

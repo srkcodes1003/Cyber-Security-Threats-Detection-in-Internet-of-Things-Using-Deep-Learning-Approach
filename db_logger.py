@@ -43,6 +43,15 @@ def get_logs():
     conn.close()
     return rows
 
+def clear_db():
+    """Truncates the threat_logs table to start fresh."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM threat_logs")
+    conn.commit()
+    conn.close()
+    print("[DB LOGGER] Database cleared successfully.")
+
 if __name__ == "__main__":
     init_db()
     print("Database threat_logs initialized successfully at:", DB_PATH)
