@@ -402,10 +402,10 @@ elif page == "Interactive Simulator":
     st.markdown("<div class='main-title'>🛡️ Interactive IoT Packet Threat Simulator</div>", unsafe_allow_html=True)
     st.markdown("<div class='sub-title'>Run live predictions on single packets or simulate real-time live network traffic flow.</div>", unsafe_allow_html=True)
     
-    sim_mode = st.tabs(["Single Packet Tester", "🚀 Live Network Traffic Stream Simulator"])
+    sim_mode = st.tabs(["🚀 Live Network Traffic Stream Simulator", "Single Packet Tester"])
     
-    # Tab 1: Single Packet Tester
-    with sim_mode[0]:
+    # Tab 2: Single Packet Tester (swapped to index 1)
+    with sim_mode[1]:
         col_ds, col_md, col_sc = st.columns(3)
         dataset_key = col_ds.selectbox("Select Target Schema Dataset", list(DATASET_SCHEMAS.keys()), format_func=lambda x: DATASET_LABELS[x], key="single_ds")
         model_type = col_md.selectbox("Select Trained Model Architecture", ["ann", "cnn", "lstm"], key="single_model")
@@ -539,8 +539,8 @@ elif page == "Interactive Simulator":
                 st.write(f"Inference latency: `{latency:.6f}s` using custom NumPy DL architecture.")
                 log_threat(f"{dataset_key.upper()}_Sim", pred_class, conf, latency)
                 
-    # Tab 2: Live Network Traffic Stream Simulator (Real-time dashboard visuals!)
-    with sim_mode[1]:
+    # Tab 1: Live Network Traffic Stream Simulator (Real-time dashboard visuals!) (swapped to index 0)
+    with sim_mode[0]:
         # SOC Header Indicators
         st.markdown("#### ⚙️ SOC SYSTEM SECURITY AGENTS")
         col_st1, col_st2, col_st3, col_st4 = st.columns(4)
@@ -555,7 +555,7 @@ elif page == "Interactive Simulator":
         
         col_lds, col_lmd, col_lsc = st.columns(3)
         stream_ds = col_lds.selectbox("Select Traffic Flow Dataset", list(DATASET_SCHEMAS.keys()), format_func=lambda x: DATASET_LABELS[x], key="stream_ds")
-        stream_model = col_lmd.selectbox("Select Flow Classifier Model", ["ann", "cnn", "lstm"], key="stream_model")
+        stream_model = col_lmd.selectbox("Select Flow Classifier Model", ["ANN", "CNN", "LSTM"], key="stream_model")
         stream_scope = col_lsc.selectbox("Select Flow Scope", ["binary", "multiclass"], key="stream_scope")
         
         # Simulated Network Topology Map Title
