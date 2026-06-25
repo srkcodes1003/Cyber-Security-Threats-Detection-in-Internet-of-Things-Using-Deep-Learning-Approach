@@ -121,8 +121,8 @@ def main():
                         help="Target dataset: kddcup99, nslkdd, bot_iot, cic_ids, or all (default)")
     parser.add_argument("--mode", type=str, default="both", choices=["binary", "multiclass", "both"],
                         help="Classification mode: binary, multiclass, or both (default)")
-    parser.add_argument("--models", type=str, default="all",
-                        help="Comma-separated models: ann, cnn, lstm, or all (default)")
+    parser.add_argument("--models", type=str, default="lstm", choices=["lstm"],
+                        help="Models to train (only 'lstm' is supported)")
     parser.add_argument("--epochs", type=int, default=10,
                         help="Number of training epochs (default: 10)")
     parser.add_argument("--batch_size", type=int, default=128,
@@ -136,10 +136,7 @@ def main():
         datasets_to_run = [args.dataset]
         
     # Resolve models list
-    if args.models.lower() == "all":
-        models_to_run = ["ann", "cnn", "lstm"]
-    else:
-        models_to_run = [m.strip().lower() for m in args.models.split(",")]
+    models_to_run = ["lstm"]
         
     # Resolve modes
     if args.mode == "both":

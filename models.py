@@ -65,50 +65,6 @@ class Softmax(Layer):
     def backward(self, output_gradient, learning_rate):
         return output_gradient
 
-class SimpleConv1D(Layer):
-    def __init__(self, input_dim: int, num_filters: int, kernel_size: int):
-        self.input_dim = input_dim
-        self.num_filters = num_filters
-        self.kernel_size = kernel_size
-        self.out_dim = input_dim - kernel_size + 1
-        
-        # Initialize filters and biases
-        self.weights = np.random.randn(num_filters, kernel_size) * np.sqrt(2.0 / (kernel_size + num_filters))
-        self.biases = np.zeros(num_filters)
-        
-    def forward(self, input_data):
-        self.input = input_data
-        batch_size = input_data.shape[0]
-        out = np.zeros((batch_size, self.num_filters, self.out_dim))
-        
-        for f in range(self.num_filters):
-            for t in range(self.out_dim):
-                out[:, f, t] = np.sum(input_data[:, t:t+self.kernel_size] * self.weights[f], axis=1) + self.biases[f]
-                
-        return out.reshape(batch_size, -1)
-        
-    def backward(self, output_gradient, learning_rate):
-        batch_size = self.input.shape[0]
-        grad_reshaped = output_gradient.reshape(batch_size, self.num_filters, self.out_dim)
-        
-        input_gradient = np.zeros_like(self.input)
-        weights_gradient = np.zeros_like(self.weights)
-        biases_gradient = np.zeros_like(self.biases)
-        
-        for f in range(self.num_filters):
-            biases_gradient[f] = np.sum(grad_reshaped[:, f, :])
-            for t in range(self.out_dim):
-                weights_gradient[f] += np.sum(self.input[:, t:t+self.kernel_size] * grad_reshaped[:, f, t:t+1], axis=0)
-                input_gradient[:, t:t+self.kernel_size] += grad_reshaped[:, f, t:t+1] * self.weights[f]
-                
-        np.clip(weights_gradient, -1.0, 1.0, out=weights_gradient)
-        np.clip(biases_gradient, -1.0, 1.0, out=biases_gradient)
-        
-        self.weights -= learning_rate * (weights_gradient / batch_size)
-        self.biases -= learning_rate * (biases_gradient / batch_size)
-        
-        return input_gradient
-
 class SimpleRNN(Layer):
     def __init__(self, input_len: int, hidden_size: int):
         self.input_len = input_len
@@ -246,31 +202,6 @@ class NumPyModel:
                 print(f"Epoch {epoch+1}/{epochs} - loss: {epoch_train_loss:.4f} - accuracy: {train_acc:.4f} - val_loss: {val_loss:.4f} - val_accuracy: {val_acc:.4f}")
                 
         return history
-
-def build_ann(input_dim: int, num_classes: int) -> NumPyModel:
-    mode = "binary" if num_classes == 2 else "multiclass"
-    layers = [
-        Dense(input_dim, 64),
-        ReLU(),
-        Dense(64, 32),
-        ReLU(),
-        Dense(32, 1 if num_classes == 2 else num_classes)
-    ]
-    return NumPyModel(layers, num_classes, mode)
-
-def build_cnn(input_dim: int, num_classes: int) -> NumPyModel:
-    mode = "binary" if num_classes == 2 else "multiclass"
-    # Simplified Conv1D with 8 filters and 3 kernel_size
-    conv_layer = SimpleConv1D(input_dim, num_filters=8, kernel_size=3)
-    out_features = 8 * (input_dim - 3 + 1)
-    layers = [
-        conv_layer,
-        ReLU(),
-        Dense(out_features, 32),
-        ReLU(),
-        Dense(32, 1 if num_classes == 2 else num_classes)
-    ]
-    return NumPyModel(layers, num_classes, mode)
 
 def build_lstm(input_dim: int, num_classes: int) -> NumPyModel:
     mode = "binary" if num_classes == 2 else "multiclass"

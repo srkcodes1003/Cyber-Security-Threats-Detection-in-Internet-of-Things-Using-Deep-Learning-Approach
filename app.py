@@ -222,7 +222,6 @@ SIMULATOR_PRESETS = {
 }
 
 # Sidebar navigation
-st.sidebar.image("https://img.icons8.com/color/144/shield-with-crown.png", width=100)
 st.sidebar.title("IoT Threat Detection")
 page = st.sidebar.radio("Navigation Menu", [
     "Dashboard Overview", 
@@ -231,17 +230,6 @@ page = st.sidebar.radio("Navigation Menu", [
     "Interactive Simulator"
 ])
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### Project Team Information")
-st.sidebar.markdown("""
-* **Batch:** DS11
-* **Team Members:**
-  - Kethavath Sindhu
-  - Sai Ramakrishna Doddapaneni
-  - Kota Rakesh
-* **Guide:** Ms. Rama Lakshmi
-* **CSE Department**
-""")
 
 # 1. Page: Dashboard Overview
 if page == "Dashboard Overview":
@@ -282,35 +270,19 @@ if page == "Dashboard Overview":
     # Comprehensive benchmark data
     benchmark_data = [
         # KDDCup99
-        {"dataset": "KDDCUP99", "mode": "binary", "model": "ANN", "accuracy": 0.8971, "precision": 0.9437, "recall": 0.9291, "f1_score": 0.9363},
-        {"dataset": "KDDCUP99", "mode": "binary", "model": "CNN", "accuracy": 0.8890, "precision": 0.9473, "recall": 0.9145, "f1_score": 0.9306},
         {"dataset": "KDDCUP99", "mode": "binary", "model": "LSTM", "accuracy": 0.8143, "precision": 0.8143, "recall": 1.0000, "f1_score": 0.8976},
-        {"dataset": "KDDCUP99", "mode": "multiclass", "model": "ANN", "accuracy": 0.8601, "precision": 0.8946, "recall": 0.8601, "f1_score": 0.8602},
-        {"dataset": "KDDCUP99", "mode": "multiclass", "model": "CNN", "accuracy": 0.7315, "precision": 0.6181, "recall": 0.7315, "f1_score": 0.6589},
         {"dataset": "KDDCUP99", "mode": "multiclass", "model": "LSTM", "accuracy": 0.6731, "precision": 0.7181, "recall": 0.6731, "f1_score": 0.6506},
         
         # NSL-KDD
-        {"dataset": "NSLKDD", "mode": "binary", "model": "ANN", "accuracy": 0.9021, "precision": 0.8998, "recall": 1.0000, "f1_score": 0.9473},
-        {"dataset": "NSLKDD", "mode": "binary", "model": "CNN", "accuracy": 0.8929, "precision": 0.9603, "recall": 0.9161, "f1_score": 0.9377},
         {"dataset": "NSLKDD", "mode": "binary", "model": "LSTM", "accuracy": 0.8796, "precision": 0.8796, "recall": 1.0000, "f1_score": 0.9360},
-        {"dataset": "NSLKDD", "mode": "multiclass", "model": "ANN", "accuracy": 0.8343, "precision": 0.8918, "recall": 0.8343, "f1_score": 0.8252},
-        {"dataset": "NSLKDD", "mode": "multiclass", "model": "CNN", "accuracy": 0.8616, "precision": 0.8755, "recall": 0.8616, "f1_score": 0.8232},
         {"dataset": "NSLKDD", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5490, "precision": 0.4621, "recall": 0.5490, "f1_score": 0.4913},
         
         # Bot-IoT
-        {"dataset": "BOT_IOT", "mode": "binary", "model": "ANN", "accuracy": 0.6975, "precision": 0.6986, "recall": 0.9928, "f1_score": 0.8201},
-        {"dataset": "BOT_IOT", "mode": "binary", "model": "CNN", "accuracy": 0.7435, "precision": 0.7629, "recall": 0.9150, "f1_score": 0.8321},
         {"dataset": "BOT_IOT", "mode": "binary", "model": "LSTM", "accuracy": 0.6840, "precision": 0.6962, "recall": 0.9669, "f1_score": 0.8095},
-        {"dataset": "BOT_IOT", "mode": "multiclass", "model": "ANN", "accuracy": 0.5955, "precision": 0.4469, "recall": 0.5955, "f1_score": 0.4981},
-        {"dataset": "BOT_IOT", "mode": "multiclass", "model": "CNN", "accuracy": 0.7015, "precision": 0.7316, "recall": 0.7015, "f1_score": 0.6941},
         {"dataset": "BOT_IOT", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5035, "precision": 0.4364, "recall": 0.5035, "f1_score": 0.4556},
         
         # CIC-IDS
-        {"dataset": "CIC_IDS", "mode": "binary", "model": "ANN", "accuracy": 0.6780, "precision": 0.8660, "recall": 0.5545, "f1_score": 0.6761},
-        {"dataset": "CIC_IDS", "mode": "binary", "model": "CNN", "accuracy": 0.6745, "precision": 0.7005, "recall": 0.8086, "f1_score": 0.7507},
         {"dataset": "CIC_IDS", "mode": "binary", "model": "LSTM", "accuracy": 0.6065, "precision": 0.6067, "recall": 0.9967, "f1_score": 0.7543},
-        {"dataset": "CIC_IDS", "mode": "multiclass", "model": "ANN", "accuracy": 0.5440, "precision": 0.5388, "recall": 0.5440, "f1_score": 0.5104},
-        {"dataset": "CIC_IDS", "mode": "multiclass", "model": "CNN", "accuracy": 0.6525, "precision": 0.5394, "recall": 0.6525, "f1_score": 0.5800},
         {"dataset": "CIC_IDS", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5195, "precision": 0.4815, "recall": 0.5195, "f1_score": 0.4113}
     ]
     
@@ -337,7 +309,7 @@ elif page == "Model Performance Plots":
     
     col_ds, col_md, col_sc = st.columns(3)
     dataset_sel = col_ds.selectbox("Select Target Dataset", list(DATASET_LABELS.keys()), format_func=lambda x: DATASET_LABELS[x])
-    model_sel = col_md.selectbox("Select Model Architecture", ["ANN", "CNN", "LSTM"])
+    model_sel = col_md.selectbox("Select Model Architecture", ["LSTM"])
     scope_sel = col_sc.selectbox("Select Classification Scope", ["Binary", "Multiclass"])
     
     # Filenames match main.py saves: outputs/{model_sel.lower()}_{dataset_sel}_{scope_sel.lower()}
@@ -375,7 +347,17 @@ elif page == "Threat Logs Database":
         
         # Filtering controls
         col_ds_f, col_cl_f = st.columns(2)
-        ds_filter = col_ds_f.selectbox("Filter by Source Dataset", ["All"] + list(df_logs["Dataset"].unique()))
+        
+        # Build list of options containing only All and the Sample datasets
+        options_list = [
+            "All",
+            "KDDCUP99_Sample",
+            "NSLKDD_Sample",
+            "BOT_IOT_Sample",
+            "CIC_IDS_Sample"
+        ]
+                
+        ds_filter = col_ds_f.selectbox("Filter by Source Dataset", options_list)
         class_filter = col_cl_f.text_input("Search/Filter by Predicted Class (e.g. normal, ddos, probe):", "")
         
         filtered_df = df_logs.copy()
@@ -408,8 +390,8 @@ elif page == "Interactive Simulator":
     with sim_mode[1]:
         col_ds, col_md, col_sc = st.columns(3)
         dataset_key = col_ds.selectbox("Select Target Schema Dataset", list(DATASET_SCHEMAS.keys()), format_func=lambda x: DATASET_LABELS[x], key="single_ds")
-        model_type = col_md.selectbox("Select Trained Model Architecture", ["ann", "cnn", "lstm"], key="single_model")
-        scope = col_sc.selectbox("Select Prediction Scope", ["binary", "multiclass"], key="single_scope")
+        model_type = col_md.selectbox("Select Trained Model Architecture", ["lstm"], key="single_model")
+        scope = col_sc.selectbox("Select Prediction Scope", ["binary", "multiclass"], format_func=lambda x: "Binary" if x == "binary" else "Multiclass", key="single_scope")
         
         dataset_presets = SIMULATOR_PRESETS.get(dataset_key, {})
         
@@ -555,8 +537,8 @@ elif page == "Interactive Simulator":
         
         col_lds, col_lmd, col_lsc = st.columns(3)
         stream_ds = col_lds.selectbox("Select Traffic Flow Dataset", list(DATASET_SCHEMAS.keys()), format_func=lambda x: DATASET_LABELS[x], key="stream_ds")
-        stream_model = col_lmd.selectbox("Select Flow Classifier Model", ["ANN", "CNN", "LSTM"], key="stream_model")
-        stream_scope = col_lsc.selectbox("Select Flow Scope", ["binary", "multiclass"], key="stream_scope")
+        stream_model = col_lmd.selectbox("Select Flow Classifier Model", ["LSTM"], key="stream_model")
+        stream_scope = col_lsc.selectbox("Select Flow Scope", ["binary", "multiclass"], format_func=lambda x: "Binary" if x == "binary" else "Multiclass", key="stream_scope")
         
         # Simulated Network Topology Map Title
         st.write("---")

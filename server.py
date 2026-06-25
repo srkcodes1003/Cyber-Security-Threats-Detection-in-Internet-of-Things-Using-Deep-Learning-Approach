@@ -14,35 +14,19 @@ app = Flask(__name__, template_folder="templates", static_folder="static")
 # Static benchmark data dictionary
 BENCHMARK_RESULTS = [
     # KDDCup99
-    {"dataset": "KDDCUP99", "mode": "binary", "model": "ANN", "accuracy": 0.8971, "precision": 0.9437, "recall": 0.9291, "f1_score": 0.9363, "training_time": 0.08},
-    {"dataset": "KDDCUP99", "mode": "binary", "model": "CNN", "accuracy": 0.8890, "precision": 0.9473, "recall": 0.9145, "f1_score": 0.9306, "training_time": 2.16},
     {"dataset": "KDDCUP99", "mode": "binary", "model": "LSTM", "accuracy": 0.8143, "precision": 0.8143, "recall": 1.0000, "f1_score": 0.8976, "training_time": 0.75},
-    {"dataset": "KDDCUP99", "mode": "multiclass", "model": "ANN", "accuracy": 0.8601, "precision": 0.8946, "recall": 0.8601, "f1_score": 0.8602, "training_time": 0.07},
-    {"dataset": "KDDCUP99", "mode": "multiclass", "model": "CNN", "accuracy": 0.7315, "precision": 0.6181, "recall": 0.7315, "f1_score": 0.6589, "training_time": 2.24},
     {"dataset": "KDDCUP99", "mode": "multiclass", "model": "LSTM", "accuracy": 0.6731, "precision": 0.7181, "recall": 0.6731, "f1_score": 0.6506, "training_time": 1.12},
     
     # NSL-KDD
-    {"dataset": "NSLKDD", "mode": "binary", "model": "ANN", "accuracy": 0.9021, "precision": 0.8998, "recall": 1.0000, "f1_score": 0.9473, "training_time": 0.12},
-    {"dataset": "NSLKDD", "mode": "binary", "model": "CNN", "accuracy": 0.8929, "precision": 0.9603, "recall": 0.9161, "f1_score": 0.9377, "training_time": 1.64},
     {"dataset": "NSLKDD", "mode": "binary", "model": "LSTM", "accuracy": 0.8796, "precision": 0.8796, "recall": 1.0000, "f1_score": 0.9360, "training_time": 0.54},
-    {"dataset": "NSLKDD", "mode": "multiclass", "model": "ANN", "accuracy": 0.8343, "precision": 0.8918, "recall": 0.8343, "f1_score": 0.8252, "training_time": 0.08},
-    {"dataset": "NSLKDD", "mode": "multiclass", "model": "CNN", "accuracy": 0.8616, "precision": 0.8755, "recall": 0.8616, "f1_score": 0.8232, "training_time": 0.88},
     {"dataset": "NSLKDD", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5490, "precision": 0.4621, "recall": 0.5490, "f1_score": 0.4913, "training_time": 0.50},
     
     # Bot-IoT
-    {"dataset": "BOT_IOT", "mode": "binary", "model": "ANN", "accuracy": 0.6975, "precision": 0.6986, "recall": 0.9928, "f1_score": 0.8201, "training_time": 0.04},
-    {"dataset": "BOT_IOT", "mode": "binary", "model": "CNN", "accuracy": 0.7435, "precision": 0.7629, "recall": 0.9150, "f1_score": 0.8321, "training_time": 0.16},
     {"dataset": "BOT_IOT", "mode": "binary", "model": "LSTM", "accuracy": 0.6840, "precision": 0.6962, "recall": 0.9669, "f1_score": 0.8095, "training_time": 0.09},
-    {"dataset": "BOT_IOT", "mode": "multiclass", "model": "ANN", "accuracy": 0.5955, "precision": 0.4469, "recall": 0.5955, "f1_score": 0.4981, "training_time": 0.05},
-    {"dataset": "BOT_IOT", "mode": "multiclass", "model": "CNN", "accuracy": 0.7015, "precision": 0.7316, "recall": 0.7015, "f1_score": 0.6941, "training_time": 0.16},
     {"dataset": "BOT_IOT", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5035, "precision": 0.4364, "recall": 0.5035, "f1_score": 0.4556, "training_time": 0.10},
     
     # CIC-IDS
-    {"dataset": "CIC_IDS", "mode": "binary", "model": "ANN", "accuracy": 0.6780, "precision": 0.8660, "recall": 0.5545, "f1_score": 0.6761, "training_time": 0.04},
-    {"dataset": "CIC_IDS", "mode": "binary", "model": "CNN", "accuracy": 0.6745, "precision": 0.7005, "recall": 0.8086, "f1_score": 0.7507, "training_time": 0.23},
     {"dataset": "CIC_IDS", "mode": "binary", "model": "LSTM", "accuracy": 0.6065, "precision": 0.6067, "recall": 0.9967, "f1_score": 0.7543, "training_time": 0.11},
-    {"dataset": "CIC_IDS", "mode": "multiclass", "model": "ANN", "accuracy": 0.5440, "precision": 0.5388, "recall": 0.5440, "f1_score": 0.5104, "training_time": 0.03},
-    {"dataset": "CIC_IDS", "mode": "multiclass", "model": "CNN", "accuracy": 0.6525, "precision": 0.5394, "recall": 0.6525, "f1_score": 0.5800, "training_time": 0.23},
     {"dataset": "CIC_IDS", "mode": "multiclass", "model": "LSTM", "accuracy": 0.5195, "precision": 0.4815, "recall": 0.5195, "f1_score": 0.4113, "training_time": 0.11}
 ]
 
@@ -89,7 +73,7 @@ def post_predict():
     """
     data = request.json
     dataset = data.get("dataset", "kddcup99").lower()
-    model_type = data.get("model_type", "ann").lower()
+    model_type = data.get("model_type", "lstm").lower()
     scope = data.get("scope", "binary").lower()
     features_input = data.get("features", {})
     
@@ -164,7 +148,7 @@ def get_stream_packet():
     4. Returns JSON packet features, classification, confidence, latency, and target IoT node.
     """
     dataset = request.args.get("dataset", "bot_iot").lower()
-    model_type = request.args.get("model_type", "ann").lower()
+    model_type = request.args.get("model_type", "lstm").lower()
     scope = request.args.get("scope", "binary").lower()
     
     csv_file = f"{dataset}_sample.csv"

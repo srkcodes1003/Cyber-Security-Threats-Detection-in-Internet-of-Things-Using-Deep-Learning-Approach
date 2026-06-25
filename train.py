@@ -1,7 +1,7 @@
 import time
 import os
 import joblib
-from models import build_ann, build_cnn, build_lstm
+from models import build_lstm
 
 # Ensure models directory exists
 MODELS_DIR = "saved_models"
@@ -18,14 +18,10 @@ def train_model(model_type: str, X_train, y_train, X_val, y_val, num_classes: in
     
     input_dim = X_train.shape[1]
     
-    if model_type.lower() == "ann":
-        model = build_ann(input_dim, num_classes)
-    elif model_type.lower() == "cnn":
-        model = build_cnn(input_dim, num_classes)
-    elif model_type.lower() == "lstm":
+    if model_type.lower() == "lstm":
         model = build_lstm(input_dim, num_classes)
     else:
-        raise ValueError(f"Invalid model_type: {model_type}")
+        raise ValueError(f"Invalid model_type: {model_type}. Only LSTM is supported.")
         
     start_time = time.time()
     
